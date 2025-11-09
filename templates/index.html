@@ -1,14 +1,181 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Travel Feed</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* Add your styles here */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #ffffff;
+            color: #333;
+            font-weight: 300;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: -0.5px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #888;
+            font-weight: 300;
+        }
+
+        .add-link {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 30px;
+            background-color: #000;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 400;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+
+        .add-link:hover {
+            background-color: #333;
+        }
+
+        .feed {
+            margin-top: 60px;
+        }
+
+        .post {
+            margin-bottom: 100px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 60px;
+        }
+
+        .post:last-child {
+            border-bottom: none;
+        }
+
+        .post-header {
+            margin-bottom: 30px;
+        }
+
+        .post-location {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .post-date {
+            font-size: 0.85rem;
+            color: #bbb;
+            margin-bottom: 15px;
+        }
+
+        .post-title {
+            font-size: 1.8rem;
+            font-weight: 400;
+            margin-bottom: 20px;
+            letter-spacing: -0.3px;
+        }
+
+        .post-media {
+            margin-bottom: 30px;
+        }
+
+        .post-media img,
+        .post-media video {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .post-text {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: #555;
+            font-weight: 300;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #999;
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
     </style>
 </head>
 <body>
-    <h1>Welcome to Travel Feed!</h1>
+    <div class="container">
+        <header>
+            <h1>Travel Feed</h1>
+            <p class="subtitle">Mes aventures à travers le monde</p>
+        </header>
+
+        <div class="feed">
+            {% if posts %}
+                {% for post in posts %}
+                <div class="post">
+                    <div class="post-header">
+                        <p class="post-location">{{ post.city }}</p>
+                        <p class="post-date">{{ post.date.strftime('%d %B %Y') }}</p>
+                        <h2 class="post-title">{{ post.title }}</h2>
+                    </div>
+
+                    {% if post.media %}
+                        <div class="post-media">
+                            {% for media_url in post.media %}
+                                {% if media_url.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')) %}
+                                    <img src="{{ media_url }}" alt="Post image">
+                                {% elif media_url.lower().endswith(('.mp4', '.webm', '.ogg')) %}
+                                    <video controls>
+                                        <source src="{{ media_url }}" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% if post.text %}
+                        <div class="post-text">
+                            {{ post.text | nl2br }}
+                        </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <p>Aucun moment partagé pour l'instant.</p>
+                    <p>Commencez à documenter vos voyages !</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 </body>
 </html>

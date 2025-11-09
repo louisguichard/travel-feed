@@ -1,27 +1,183 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New Post - Travel Feed</title>
+    <title>Ajouter un moment - Travel Feed</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* Add your styles here */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #ffffff;
+            color: #333;
+            font-weight: 300;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: -0.5px;
+            margin-bottom: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #333;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 400;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            font-weight: 300;
+            color: #333;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #999;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px dashed #e0e0e0;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            color: #666;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        input[type="file"]:hover {
+            border-color: #999;
+        }
+
+        .button-group {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        button[type="submit"] {
+            padding: 15px 50px;
+            background-color: #000;
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            font-weight: 400;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #333;
+        }
+
+        .helper-text {
+            font-size: 0.85rem;
+            color: #999;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
-    <h1>Add a New Travel Post</h1>
-    <form action="/add" method="post" enctype="multipart/form-data">
-        <div>
-            <label for="text">Your text:</label>
-            <textarea id="text" name="text" rows="10" cols="50"></textarea>
-        </div>
-        <div>
-            <label for="media">Add a photo or video:</label>
-            <input type="file" id="media" name="media" accept="image/*,video/*">
-        </div>
-        <div>
-            <button type="submit">Add Post</button>
-        </div>
-    </form>
+    <div class="container">
+        <header>
+            <h1>Ajouter un moment</h1>
+            <a href="/" class="back-link">← Retour au feed</a>
+        </header>
+
+        <form action="/add" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="city">Ville</label>
+                <input type="text" id="city" name="city" required>
+            </div>
+
+            <div class="form-group">
+                <label for="date">Date</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+
+            <div class="form-group">
+                <label for="title">Titre</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+
+            <div class="form-group">
+                <label for="text">Texte</label>
+                <textarea id="text" name="text"></textarea>
+                <p class="helper-text">Décrivez votre moment (optionnel)</p>
+            </div>
+
+            <div class="form-group">
+                <label for="media">Photos ou vidéos</label>
+                <input type="file" id="media" name="media" accept="image/*,video/*" multiple>
+                <p class="helper-text">Formats acceptés : images et vidéos (optionnel)</p>
+            </div>
+
+            <div class="button-group">
+                <button type="submit">Publier</button>
+            </div>
+        </form>
+    </div>
 </body>
 </html>
