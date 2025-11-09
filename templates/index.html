@@ -14,119 +14,131 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #ffffff;
-            color: #333;
+            background-color: #fff;
+            color: #1a1a1a;
             font-weight: 300;
-            line-height: 1.6;
+            line-height: 1.7;
         }
 
         .container {
             max-width: 800px;
             margin: 0 auto;
-            padding: 60px 20px;
+            padding: 80px 30px;
         }
 
         header {
             text-align: center;
-            margin-bottom: 80px;
+            margin-bottom: 90px;
+            padding-bottom: 30px;
         }
 
         h1 {
-            font-size: 2.5rem;
-            font-weight: 300;
-            letter-spacing: -0.5px;
-            margin-bottom: 10px;
+            font-size: 2.8rem;
+            font-weight: 200;
+            letter-spacing: -1px;
+            margin-bottom: 15px;
         }
 
         .subtitle {
-            font-size: 1rem;
-            color: #888;
+            font-size: 1.05rem;
+            color: #a0a0a0;
             font-weight: 300;
-        }
-
-        .add-link {
-            display: inline-block;
-            margin-top: 30px;
-            padding: 12px 30px;
-            background-color: #000;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 30px;
-            font-weight: 400;
-            font-size: 0.9rem;
-            transition: background-color 0.3s;
-        }
-
-        .add-link:hover {
-            background-color: #333;
-        }
-
-        .feed {
-            margin-top: 60px;
+            letter-spacing: 0.3px;
         }
 
         .post {
-            margin-bottom: 100px;
+            margin-bottom: 90px;
+            padding-bottom: 90px;
             border-bottom: 1px solid #f0f0f0;
-            padding-bottom: 60px;
         }
 
         .post:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
             border-bottom: none;
         }
 
         .post-header {
-            margin-bottom: 30px;
+            margin-bottom: 35px;
         }
 
         .post-location {
-            font-size: 0.85rem;
-            color: #999;
+            font-size: 0.75rem;
+            color: #b0b0b0;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 5px;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            font-weight: 500;
         }
 
         .post-date {
-            font-size: 0.85rem;
-            color: #bbb;
-            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: #c0c0c0;
+            margin-bottom: 20px;
+            font-weight: 300;
         }
 
         .post-title {
-            font-size: 1.8rem;
-            font-weight: 400;
-            margin-bottom: 20px;
-            letter-spacing: -0.3px;
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0;
+            letter-spacing: -0.5px;
+            line-height: 1.3;
         }
 
         .post-media {
-            margin-bottom: 30px;
+            margin-top: 35px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: #e0e0e0 #f7f7f7;
         }
+        
+        .post-media::-webkit-scrollbar { height: 6px; }
+        .post-media::-webkit-scrollbar-track { background: #f7f7f7; border-radius: 10px; }
+        .post-media::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 10px; }
+        .post-media::-webkit-scrollbar-thumb:hover { background: #d0d0d0; }
 
         .post-media img,
         .post-media video {
-            width: 100%;
-            height: auto;
+            display: inline-block;
+            height: 380px;
+            width: auto;
+            max-width: none;
             border-radius: 8px;
+            margin-right: 15px;
+            vertical-align: middle;
         }
 
         .post-text {
-            font-size: 1rem;
-            line-height: 1.8;
-            color: #555;
+            font-size: 1.05rem;
+            line-height: 1.9;
+            color: #444;
             font-weight: 300;
+            margin-top: 40px;
+            white-space: pre-wrap;
         }
 
         .empty-state {
             text-align: center;
-            padding: 80px 20px;
-            color: #999;
+            padding: 100px 20px;
+            color: #ccc;
         }
 
         .empty-state p {
-            font-size: 1.1rem;
-            margin-bottom: 30px;
+            font-size: 1.15rem;
+            margin-bottom: 25px;
+            font-weight: 300;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 50px 20px; }
+            h1 { font-size: 2.2rem; }
+            .post { margin-bottom: 60px; padding-bottom: 60px; }
+            .post-media img, .post-media video { height: 280px; }
+            .post-title { font-size: 1.6rem; }
         }
     </style>
 </head>
@@ -143,7 +155,7 @@
                 <div class="post">
                     <div class="post-header">
                         <p class="post-location">{{ post.city }}</p>
-                        <p class="post-date">{{ post.date.strftime('%d %B %Y') }}</p>
+                        <p class="post-date">{{ post.datetime.strftime('%d %B %Y à %H:%M') }}</p>
                         <h2 class="post-title">{{ post.title }}</h2>
                     </div>
 
@@ -163,9 +175,7 @@
                     {% endif %}
 
                     {% if post.text %}
-                        <div class="post-text">
-                            {{ post.text | nl2br }}
-                        </div>
+                        <div class="post-text">{{ post.text }}</div>
                     {% endif %}
                 </div>
                 {% endfor %}

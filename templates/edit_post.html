@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ajouter un moment - Travel Feed</title>
+    <title>Modifier - Travel Feed</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
@@ -128,12 +128,13 @@
         .button-group {
             margin-top: 50px;
             text-align: center;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
         }
 
-        button[type="submit"] {
-            padding: 16px 60px;
-            background-color: #1a1a1a;
-            color: #fff;
+        button {
+            padding: 16px 50px;
             border: none;
             border-radius: 50px;
             font-family: 'Inter', sans-serif;
@@ -144,10 +145,37 @@
             letter-spacing: 0.3px;
         }
 
-        button[type="submit"]:hover {
+        button[name="action"][value="update"] {
+            background-color: #1a1a1a;
+            color: #fff;
+        }
+
+        button[name="action"][value="update"]:hover {
             background-color: #333;
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        button[name="action"][value="delete"] {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        button[name="action"][value="delete"]:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        .delete-button {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .delete-button:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
         }
 
         .helper-text {
@@ -155,6 +183,23 @@
             color: #aaa;
             margin-top: 8px;
             font-weight: 300;
+        }
+
+        .current-media {
+            margin-bottom: 15px;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 10px 0;
+        }
+
+        .current-media img,
+        .current-media video {
+            display: inline-block;
+            height: 150px;
+            width: auto;
+            margin-right: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         @media (max-width: 768px) {
@@ -169,53 +214,85 @@
             form {
                 padding: 30px 25px;
             }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Ajouter un moment</h1>
+            <h1>Modifier le moment</h1>
             <a href="/" class="back-link">← Retour au feed</a>
         </header>
 
-        <form action="/add" method="post" enctype="multipart/form-data">
+        <form method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="city">Ville</label>
-                <input type="text" id="city" name="city" required>
+                <input type="text" id="city" name="city" value="{{ post.city }}" required>
             </div>
 
             <div class="form-group">
                 <label for="date">Date</label>
-                <input type="date" id="date" name="date" required>
+                <input type="date" id="date" name="date" value="{{ post.datetime.strftime('%Y-%m-%d') }}" required>
             </div>
 
             <div class="form-group">
                 <label for="time">Heure</label>
-                <input type="time" id="time" name="time" required>
+                <input type="time" id="time" name="time" value="{{ post.datetime.strftime('%H:%M') }}" required>
             </div>
 
             <div class="form-group">
                 <label for="title">Titre</label>
-                <input type="text" id="title" name="title" required>
+                <input type="text" id="title" name="title" value="{{ post.title }}" required>
             </div>
 
             <div class="form-group">
                 <label for="text">Texte</label>
-                <textarea id="text" name="text"></textarea>
+                <textarea id="text" name="text">{{ post.text }}</textarea>
                 <p class="helper-text">Décrivez votre moment (optionnel)</p>
             </div>
 
+            {% if post.media %}
             <div class="form-group">
-                <label for="media">Photos ou vidéos</label>
+                <label>Médias actuels</label>
+                <div class="current-media">
+                    {% for media_url in post.media %}
+                        {% if media_url.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')) %}
+                            <img src="{{ media_url }}" alt="Current media">
+                        {% elif media_url.lower().endswith(('.mp4', '.webm', '.ogg')) %}
+                            <video controls style="max-width: 200px;">
+                                <source src="{{ media_url }}" type="video/mp4">
+                            </video>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="media">Ajouter des photos ou vidéos</label>
                 <input type="file" id="media" name="media" accept="image/*,video/*" multiple>
-                <p class="helper-text">Formats acceptés : images et vidéos (optionnel)</p>
+                <p class="helper-text">Les nouveaux médias seront ajoutés aux médias existants</p>
             </div>
 
             <div class="button-group">
-                <button type="submit">Publier</button>
+                <button type="submit">Mettre à jour</button>
+            </div>
+        </form>
+
+        <form action="{{ url_for('delete_post', post_id=post.id) }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?');">
+            <div class="button-group">
+                <button type="submit" class="delete-button">Supprimer</button>
             </div>
         </form>
     </div>
 </body>
 </html>
+

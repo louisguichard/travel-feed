@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier un post - Travel Feed</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fff;
+            color: #1a1a1a;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        h1 {
+            font-weight: 200;
+            font-size: 2.5rem;
+        }
+        .post-list {
+            list-style: none;
+            padding: 0;
+        }
+        .post-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .post-item:last-child {
+            border-bottom: none;
+        }
+        .post-info {
+            font-weight: 300;
+        }
+        .post-title {
+            font-weight: 400;
+            font-size: 1.1rem;
+        }
+        .post-details {
+            font-size: 0.9rem;
+            color: #999;
+            margin-top: 5px;
+        }
+        .post-actions a, .post-actions button {
+            text-decoration: none;
+            color: #333;
+            margin-left: 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .post-actions .delete-btn {
+            color: #dc3545;
+            border: none;
+            background: none;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 50px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Gérer les posts</h1>
+        </header>
+        <ul class="post-list">
+            {% for post in posts %}
+            <li class="post-item">
+                <div class="post-info">
+                    <div class="post-title">{{ post.title }}</div>
+                    <div class="post-details">{{ post.city }} - {{ post.datetime.strftime('%d %B %Y') }}</div>
+                </div>
+                <div class="post-actions">
+                    <a href="{{ url_for('edit_post', post_id=post.id) }}">Modifier</a>
+                    <form action="{{ url_for('delete_post', post_id=post.id) }}" method="post" style="display: inline;" onsubmit="return confirm('Sûr ?');">
+                        <button type="submit" class="delete-btn">Supprimer</button>
+                    </form>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        <a href="/" class="back-link">Retour à l'accueil</a>
+    </div>
+</body>
+</html>
