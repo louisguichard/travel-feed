@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Post - Travel Feed</title>
+    <style>
+        /* Add your styles here */
+    </style>
+</head>
+<body>
+    <h1>Add a New Travel Post</h1>
+    <form action="/add" method="post" enctype="multipart/form-data">
+        <div>
+            <label for="text">Your text:</label>
+            <textarea id="text" name="text" rows="10" cols="50"></textarea>
+        </div>
+        <div>
+            <label for="media">Add a photo or video:</label>
+            <input type="file" id="media" name="media" accept="image/*,video/*">
+        </div>
+        <div>
+            <button type="submit">Add Post</button>
+        </div>
+    </form>
+</body>
+</html>
