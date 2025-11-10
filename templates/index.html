@@ -14,7 +14,7 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #fff;
+            background-color: #fafafa;
             color: #1a1a1a;
             min-height: 100vh;
         }
@@ -113,6 +113,14 @@
             letter-spacing: 0.5px;
         }
 
+        .post-title {
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-top: 20px;
+            letter-spacing: 0.3px;
+        }
+
         .post-media-container {
             margin-bottom: 32px;
             position: relative;
@@ -142,12 +150,13 @@
 
         .media-item img,
         .media-item video {
-            width: 384px;
-            height: 288px;
-            object-fit: cover;
+            max-width: 600px;
+            max-height: 600px;
+            height: auto;
+            object-fit: contain;
             border-radius: 12px;
             border: 1px solid #e8e8e8;
-            background-color: #fafafa;
+            background-color: #fff;
         }
 
         .post-text {
@@ -214,8 +223,8 @@
 
             .media-item img,
             .media-item video {
-                width: 280px;
-                height: 210px;
+                max-width: 340px;
+                max-height: 400px;
             }
         }
     </style>
@@ -254,6 +263,9 @@
                             <span>{{ post.display_datetime.split(' à ')[1] if ' à ' in post.display_datetime else '' }}</span>
                         </div>
                     </div>
+                    {% if post.title %}
+                    <h3 class="post-title">{{ post.title }}</h3>
+                    {% endif %}
                 </header>
 
                 {% if post.media %}
