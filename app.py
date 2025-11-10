@@ -2,16 +2,8 @@ import os
 import json
 import datetime
 import uuid
-import locale
 from flask import Flask, render_template, request, redirect, url_for
 from google.cloud import storage
-
-# Set locale to French for date formatting
-try:
-    locale.setlocale(locale.LC_TIME, "fr_FR.UTF-8")
-except locale.Error:
-    locale.setlocale(locale.LC_TIME, "French")
-
 
 app = Flask(__name__)
 
@@ -25,6 +17,15 @@ DB_FILE = "db.json"
 # or the service account on Cloud Run.
 storage_client = storage.Client()
 bucket = storage_client.bucket(BUCKET_NAME)
+
+# Simple French month names (no system locale required)
+MONTHS_FR = [
+    "janvier", "février", "mars", "avril", "mai", "juin",
+    "juillet", "août", "septembre", "octobre", "novembre", "décembre"
+]
+
+def format_datetime_fr(dt):
+    return f"{dt.day:02d} {MONTHS_FR[dt.month - 1]} {dt.year} à {dt.strftime('%H:%M')}"
 
 
 def get_posts():
@@ -40,6 +41,11 @@ def get_posts():
             elif "date" in post:
                 # Handle old format for backward compatibility
                 post["datetime"] = datetime.datetime.strptime(post["date"], "%Y-%m-%d")
+            # Prepare a display string in French
+            if isinstance(post.get("datetime"), datetime.datetime):
+                post["display_datetime"] = format_datetime_fr(post["datetime"])
+            else:
+                post["display_datetime"] = ""
     # Sort posts in anti-chronological order (newest first)
     return sorted(posts_data, key=lambda x: x["datetime"], reverse=True)
 
