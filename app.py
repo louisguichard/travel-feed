@@ -20,9 +20,20 @@ bucket = storage_client.bucket(BUCKET_NAME)
 
 # Simple French month names (no system locale required)
 MONTHS_FR = [
-    "janvier", "février", "mars", "avril", "mai", "juin",
-    "juillet", "août", "septembre", "octobre", "novembre", "décembre"
+    "janvier",
+    "février",
+    "mars",
+    "avril",
+    "mai",
+    "juin",
+    "juillet",
+    "août",
+    "septembre",
+    "octobre",
+    "novembre",
+    "décembre",
 ]
+
 
 def format_datetime_fr(dt):
     return f"{dt.day:02d} {MONTHS_FR[dt.month - 1]} {dt.year} à {dt.strftime('%H:%M')}"
