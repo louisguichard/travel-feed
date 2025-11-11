@@ -623,6 +623,11 @@
                 scroll.addEventListener('scroll', updateGalleryControls);
             });
 
+            // Update controls on window load and resize to ensure correct arrow visibility
+            // after all images have loaded and when the viewport changes.
+            window.addEventListener('load', updateGalleryControls);
+            window.addEventListener('resize', updateGalleryControls);
+
             // Newsletter subscription
             const form = document.getElementById('newsletter-form');
             const emailInput = document.getElementById('newsletter-email');
