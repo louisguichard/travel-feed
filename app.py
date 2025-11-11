@@ -7,18 +7,14 @@ from google.cloud import storage
 
 app = Flask(__name__)
 
-# --- Configuration ---
+# Cloud Storage configuration
 BUCKET_NAME = "travel-feed"
 DB_FILE = "db.json"
-# ---
 
-# Initialize Google Cloud Storage client
-# This will automatically use your local authentication
-# or the service account on Cloud Run.
 storage_client = storage.Client()
 bucket = storage_client.bucket(BUCKET_NAME)
 
-# Simple French month names (no system locale required)
+# French month names
 MONTHS_FR = [
     "janvier",
     "février",
@@ -40,32 +36,24 @@ def format_datetime_fr(dt):
 
 
 def get_posts():
-    """Reads and returns all posts from the JSON database."""
-    if not os.path.exists(DB_FILE):
+    """Reads and returns all posts from the JSON database in GCS."""
+    blob = bucket.blob(DB_FILE)
+    if not blob.exists():
         return []
-    with open(DB_FILE, "r") as f:
-        posts_data = json.load(f)
-        # Convert datetime strings back to datetime objects for sorting
-        for post in posts_data:
-            if "datetime" in post:
-                post["datetime"] = datetime.datetime.fromisoformat(post["datetime"])
-            elif "date" in post:
-                # Handle old format for backward compatibility
-                post["datetime"] = datetime.datetime.strptime(post["date"], "%Y-%m-%d")
-            # Prepare a display string in French
-            if isinstance(post.get("datetime"), datetime.datetime):
-                post["display_datetime"] = format_datetime_fr(post["datetime"])
-            else:
-                post["display_datetime"] = ""
-    # Sort posts in anti-chronological order (newest first)
+    posts_data = json.loads(blob.download_as_text())
+
+    # Convert datetime strings back to datetime objects for sorting
+    for post in posts_data:
+        post["datetime"] = datetime.datetime.fromisoformat(post["datetime"])
+        post["display_datetime"] = format_datetime_fr(post["datetime"])
     return sorted(posts_data, key=lambda x: x["datetime"], reverse=True)
 
 
 def save_posts(posts):
-    """Saves the list of posts to the JSON database."""
-    with open(DB_FILE, "w") as f:
-        # Convert date objects to strings for JSON serialization
-        json.dump(posts, f, indent=4, default=str)
+    """Saves the list of posts to the JSON database in GCS."""
+    blob = bucket.blob(DB_FILE)
+    data = json.dumps(posts, indent=4, default=str)
+    blob.upload_from_string(data, content_type="application/json")
 
 
 @app.route("/")
@@ -78,20 +66,16 @@ def index():
 def add():
     if request.method == "POST":
         media_urls = []
-        files = request.files.getlist("media")
+        medias = request.files.getlist("media")
 
-        for file in files:
-            if file.filename:
+        for media in medias:
+            if media.filename:
                 # Generate a unique filename
-                filename = f"{uuid.uuid4()}{os.path.splitext(file.filename)[1]}"
+                filename = f"{uuid.uuid4()}{os.path.splitext(media.filename)[1]}"
                 blob = bucket.blob(filename)
 
                 # Upload the file to GCS
-                blob.upload_from_file(file.stream, content_type=file.content_type)
-
-                # The bucket needs to be publicly readable.
-                # The make_public() call is not needed and will fail
-                # on buckets with uniform access control.
+                blob.upload_from_file(media.stream, content_type=media.content_type)
                 media_urls.append(blob.public_url)
 
         # Combine date and time into a datetime object
