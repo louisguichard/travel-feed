@@ -360,7 +360,7 @@
                                     {% if media.url.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')) %}
                                         <img src="{{ media.url }}" alt="{{ media.description or 'Photo de voyage' }}" loading="lazy">
                                     {% elif media.url.lower().endswith(('.mp4', '.webm', '.ogg')) %}
-                                        <video muted loop>
+                                        <video autoplay muted loop playsinline>
                                             <source src="{{ media.url }}" type="video/mp4">
                                         </video>
                                     {% endif %}
@@ -494,12 +494,6 @@
             
             document.querySelectorAll('.media-scroll').forEach(scroll => {
                 scroll.addEventListener('scroll', updateGalleryControls);
-            });
-
-            // Auto-play videos on hover
-            document.querySelectorAll('.media-item video').forEach(video => {
-                video.addEventListener('mouseenter', () => video.play());
-                video.addEventListener('mouseleave', () => video.pause());
             });
         });
     </script>

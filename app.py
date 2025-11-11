@@ -6,6 +6,7 @@ from flask import Flask, render_template, request, redirect, url_for
 from google.cloud import storage
 
 app = Flask(__name__)
+app.config["MAX_CONTENT_LENGTH"] = 100 * 1024 * 1024  # 100 MB limit
 
 # Cloud Storage configuration
 BUCKET_NAME = "travel-feed"
@@ -142,15 +143,14 @@ def edit_post(post_id):
         return redirect(url_for("index"))
 
     if request.method == "POST":
-        # Keep existing media
-        existing_media = post.get("media", [])
-        # Normalize old format to new format if needed
-        media_items = []
-        for item in existing_media:
-            if isinstance(item, str):
-                media_items.append({"url": item, "description": ""})
-            else:
-                media_items.append(item)
+        # Update descriptions of existing media
+        existing_media_urls = request.form.getlist("existing_media_url")
+        existing_media_descs = request.form.getlist("existing_media_description")
+        description_map = dict(zip(existing_media_urls, existing_media_descs))
+
+        for media_item in post.get("media", []):
+            if media_item["url"] in description_map:
+                media_item["description"] = description_map[media_item["url"]]
 
         # Add new media
         files = request.files.getlist("media")
@@ -168,7 +168,7 @@ def edit_post(post_id):
                     if i < len(media_descriptions)
                     else "",
                 }
-                media_items.append(media_item)
+                post["media"].append(media_item)
 
         date_str = request.form.get("date")
         time_str = request.form.get("time")
@@ -179,7 +179,6 @@ def edit_post(post_id):
         post["city"] = request.form.get("city")
         post["datetime"] = post_datetime.isoformat()
         post["text"] = request.form.get("text")
-        post["media"] = media_items
 
         save_posts(posts)
         return redirect(url_for("edit_list"))
