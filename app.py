@@ -68,12 +68,9 @@ def get_posts():
 def save_posts(posts):
     """Saves the list of posts to the JSON database in GCS."""
     blob = bucket.blob(DB_FILE)
+    blob.cache_control = "no-store"
     data = json.dumps(posts, indent=4, default=str)
     blob.upload_from_string(data, content_type="application/json")
-
-    # Set metadata to disable caching
-    blob.cache_control = "no-store"
-    blob.patch()
 
 
 @app.route("/")
