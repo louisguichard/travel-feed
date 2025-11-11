@@ -181,6 +181,16 @@ def add():
             "media": media_items,
         }
 
+        # Optional: latitude/longitude
+        lat_str = (request.form.get("latitude") or "").strip()
+        lng_str = (request.form.get("longitude") or "").strip()
+        try:
+            if lat_str and lng_str:
+                new_post["latitude"] = float(lat_str)
+                new_post["longitude"] = float(lng_str)
+        except Exception:
+            pass
+
         posts = get_posts()
         posts.append(new_post)
         save_posts(posts)
@@ -255,6 +265,19 @@ def edit_post(post_id):
         post["datetime"] = post_datetime.isoformat()
         post["text"] = request.form.get("text")
 
+        # Optional: update latitude/longitude (remove if empty)
+        lat_str = (request.form.get("latitude") or "").strip()
+        lng_str = (request.form.get("longitude") or "").strip()
+        if lat_str and lng_str:
+            try:
+                post["latitude"] = float(lat_str)
+                post["longitude"] = float(lng_str)
+            except Exception:
+                pass
+        else:
+            post.pop("latitude", None)
+            post.pop("longitude", None)
+
         save_posts(posts)
         return redirect(url_for("edit_list"))
 
@@ -306,6 +329,29 @@ def unsubscribe():
         return redirect(url_for("index", unsubscribe_success="true"))
 
     return redirect(url_for("index"))
+
+
+@app.route("/locations")
+def locations():
+    posts = get_posts()
+    locations = []
+    # Return in chronological order for path drawing
+    for p in reversed(posts):
+        lat = p.get("latitude")
+        lng = p.get("longitude")
+        if lat is not None and lng is not None:
+            dt = p["datetime"]
+            if hasattr(dt, "isoformat"):
+                dt = dt.isoformat()
+            locations.append(
+                {
+                    "lat": lat,
+                    "lng": lng,
+                    "city": p.get("city", ""),
+                    "datetime": dt,
+                }
+            )
+    return jsonify(locations)
 
 
 if __name__ == "__main__":

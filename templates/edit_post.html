@@ -298,6 +298,16 @@
                 </div>
             </div>
 
+            <div class="form-group">
+                <label>Localisation (optionnel)</label>
+                <div class="datetime-group">
+                    <input type="text" id="latitude" name="latitude" value="{{ post.latitude or '' }}" placeholder="Latitude (ex: 48.8566)">
+                    <input type="text" id="longitude" name="longitude" value="{{ post.longitude or '' }}" placeholder="Longitude (ex: 2.3522)">
+                </div>
+                <button type="button" class="add-media-btn" onclick="useMyLocation()">Utiliser ma position</button>
+                <span class="hint">Laisser vide pour supprimer la localisation.</span>
+            </div>
+
             {% if post.media %}
             <div class="form-group">
                 <label>Médias actuels</label>
@@ -360,6 +370,22 @@
                 <input type="text" name="media_description" placeholder="Description du média (optionnel)">
             `;
             container.appendChild(newField);
+        }
+        function useMyLocation() {
+            if (!navigator.geolocation) {
+                alert('La géolocalisation n\\'est pas supportée par votre navigateur.');
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(function(pos) {
+                var lat = pos.coords.latitude;
+                var lng = pos.coords.longitude;
+                var latInput = document.getElementById('latitude');
+                var lngInput = document.getElementById('longitude');
+                if (latInput) latInput.value = lat.toFixed(6);
+                if (lngInput) lngInput.value = lng.toFixed(6);
+            }, function() {
+                alert('Impossible de récupérer votre position.');
+            });
         }
     </script>
 </body>

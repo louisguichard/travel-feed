@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <style>
         * {
             margin: 0;
@@ -400,6 +401,43 @@
             display: block;
         }
 
+            /* Map */
+            #map-section {
+                max-width: 720px;
+                margin: 0 auto 32px;
+            }
+            #map {
+                height: 300px;
+                border: 1px solid #f0f0f0;
+                border-radius: 12px;
+                background: #fafafa;
+            }
+
+            /* Pulsing marker for last location */
+            .pulse-marker {
+                background: #ef4444;
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.25);
+                position: relative;
+            }
+            .pulse-marker::after {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                background: rgba(239, 68, 68, 0.35);
+                animation: pulse 1.6s ease-out infinite;
+            }
+            @keyframes pulse {
+                from { transform: scale(1); opacity: 0.8; }
+                to { transform: scale(2.4); opacity: 0; }
+            }
+
         /* Responsive */
         @media (max-width: 768px) {
             header {
@@ -486,6 +524,9 @@
     </header>
 
     <main>
+        <section id="map-section">
+            <div id="map"></div>
+        </section>
         {% if posts %}
             {% for post in posts %}
             <article class="post">
@@ -834,6 +875,56 @@
                     if (dx < 0) showNext();
                     else showPrev();
                 }
+            });
+        });
+    </script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var section = document.getElementById('map-section');
+            var mapEl = document.getElementById('map');
+            if (!mapEl) return;
+
+            var map = L.map('map', { zoomControl: true, scrollWheelZoom: false });
+            L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+                attribution:
+                    'données &copy; <a href="//osm.org/copyright">OpenStreetMap</a>/ODbL – rendu <a href="//openstreetmap.fr">OSM France</a>',
+                minZoom: 1,
+                maxZoom: 20
+                }).addTo(map);
+
+            fetch('/locations')
+                .then(function(r) { return r.json(); })
+                .then(function(locations) {
+                    if (!locations || !locations.length) {
+                        section.style.display = 'none';
+                        return;
+                    }
+                    var latlngs = [];
+                    locations.forEach(function(loc) {
+                        var lat = parseFloat(loc.lat);
+                        var lng = parseFloat(loc.lng);
+                        if (!isNaN(lat) && !isNaN(lng)) latlngs.push([lat, lng]);
+                    });
+                    if (!latlngs.length) {
+                        section.style.display = 'none';
+                        return;
+                    }
+                    var polyline = L.polyline(latlngs, { color: '#1a1a1a', weight: 2, opacity: 0.35 }).addTo(map);
+                    for (var i = 0; i < latlngs.length - 1; i++) {
+                        L.circleMarker(latlngs[i], { radius: 4, color: '#666', fillColor: '#666', fillOpacity: 0.9 }).addTo(map);
+                    }
+                    var last = latlngs[latlngs.length - 1];
+                    var pulseIcon = L.divIcon({ className: 'pulse-marker', iconSize: [20,20], iconAnchor: [10,10] });
+                    L.marker(last, { icon: pulseIcon }).addTo(map);
+                    map.fitBounds(polyline.getBounds(), { padding: [20, 20] });
+                })
+                .catch(function() {
+                    section.style.display = 'none';
+                });
+            // Keep center on resize
+            window.addEventListener('resize', function() {
+                map.invalidateSize();
             });
         });
     </script>
