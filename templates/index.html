@@ -556,15 +556,16 @@
 
         // Update arrow visibility and fade effect
         function updateGalleryControls() {
-            document.querySelectorAll('.media-scroll').forEach((scroll, index) => {
-                const scrollIndex = index + 1;
+            document.querySelectorAll('.media-scroll').forEach((scroll) => {
+                const scrollIndex = scroll.id.split('-')[1];
                 const leftArrow = document.getElementById(`left-${scrollIndex}`);
                 const rightArrow = document.getElementById(`right-${scrollIndex}`);
                 const fadeIndicator = document.getElementById(`fade-${scrollIndex}`);
                 
                 if (leftArrow && rightArrow && fadeIndicator) {
-                    const isAtStart = scroll.scrollLeft <= 10;
-                    const isAtEnd = scroll.scrollLeft >= scroll.scrollWidth - scroll.offsetWidth - 10;
+                    // Add a small tolerance for floating point issues
+                    const isAtStart = scroll.scrollLeft <= 1;
+                    const isAtEnd = scroll.scrollLeft >= scroll.scrollWidth - scroll.offsetWidth - 1;
                     
                     leftArrow.classList.toggle('hidden', isAtStart);
                     rightArrow.classList.toggle('hidden', isAtEnd);
