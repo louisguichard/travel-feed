@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carnet de Voyage</title>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    <title>Carnet de voyage</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,277 +15,376 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #fafafa;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #ffffff;
             color: #1a1a1a;
-            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
         }
 
-        h1, h2, h3 {
-            font-family: 'Manrope', sans-serif;
-        }
-
-        .page-header {
-            border-bottom: 1px solid #f0f0f0;
-            margin-bottom: 64px;
-        }
-
-        .page-header-inner {
-            max-width: 1280px;
+        /* Header */
+        header {
+            padding: 60px 32px 48px;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 40px 32px;
+            text-align: center;
         }
 
-        .page-header h1 {
-            font-size: 1.5rem;
+        h1 {
+            font-size: 28px;
             font-weight: 300;
-            letter-spacing: 0.5px;
+            letter-spacing: -0.02em;
             color: #1a1a1a;
+            margin-bottom: 8px;
         }
 
-        .page-header .subtitle {
-            font-size: 0.75rem;
-            color: #888;
+        .subtitle {
+            font-size: 14px;
             font-weight: 300;
-            letter-spacing: 0.5px;
-            margin-top: 8px;
+            color: #999;
+            letter-spacing: 0.01em;
         }
 
+        /* Main content */
         main {
-            max-width: 1280px;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 0 32px 64px 32px;
+            padding: 0 32px 80px;
         }
 
+        /* Post */
         .post {
-            background-color: #fff;
-            padding: 48px 0;
+            margin-bottom: 56px;
+            padding-bottom: 56px;
+            border-bottom: 1px solid #f5f5f5;
         }
 
-        .post:not(:last-child) {
-            border-bottom: 1px solid #f0f0f0;
+        .post:last-child {
+            border-bottom: none;
         }
 
-        .post-header {
-            margin-bottom: 32px;
-        }
-
-        .post-destination {
-            display: flex;
-            align-items: center;
+        .post-location {
+            font-size: 18px;
+            font-weight: 400;
             color: #1a1a1a;
-            margin-bottom: 12px;
-        }
-
-        .post-destination svg {
-            width: 16px;
-            height: 16px;
-            margin-right: 12px;
-            stroke-width: 1.5;
-        }
-
-        .post-destination h2 {
-            font-size: 1.25rem;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-        }
-
-        .post-meta {
+            margin-bottom: 4px;
+            letter-spacing: -0.01em;
             display: flex;
             align-items: center;
-            gap: 24px;
-            color: #888;
-            font-size: 0.75rem;
+            gap: 8px;
         }
 
-        .post-meta-item {
-            display: flex;
-            align-items: center;
-        }
-
-        .post-meta-item svg {
-            width: 12px;
-            height: 12px;
-            margin-right: 8px;
-            stroke-width: 1.5;
-        }
-
-        .post-meta-item span {
+        .post-datetime {
+            font-size: 13px;
             font-weight: 300;
-            letter-spacing: 0.5px;
+            color: #999;
+            margin-bottom: 24px;
         }
 
-        .post-title {
-            font-size: 1.125rem;
-            font-weight: 500;
-            color: #1a1a1a;
-            margin-top: 20px;
-            letter-spacing: 0.3px;
-        }
-
-        .post-media-container {
-            margin-bottom: 32px;
+        /* Media Gallery */
+        .media-gallery {
             position: relative;
+            margin-bottom: 24px;
         }
 
-        .post-media {
-            display: flex;
-            overflow-x: auto;
-            overflow-y: hidden;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
+        .media-scroll-container {
+            position: relative;
+            overflow: hidden;
         }
-        
-        .post-media::-webkit-scrollbar {
+
+        .media-scroll {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 8px;
+        }
+
+        .media-scroll::-webkit-scrollbar {
             display: none;
         }
 
         .media-item {
             flex-shrink: 0;
-            margin-right: 16px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
-        .media-item:last-child {
-            margin-right: 48px;
+        .media-item > div {
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .media-item > div:hover {
+            opacity: 0.95;
         }
 
         .media-item img,
         .media-item video {
+            height: 340px;
+            width: auto;
             max-width: 600px;
-            max-height: 600px;
-            height: auto;
-            object-fit: contain;
-            border-radius: 12px;
-            border: 1px solid #e8e8e8;
-            background-color: #fff;
+            object-fit: cover;
+            display: block;
         }
 
-        .post-text {
-            font-size: 0.875rem;
-            line-height: 1.75;
-            color: #555;
+        .media-description {
+            font-size: 13px;
             font-weight: 300;
-            letter-spacing: 0.3px;
-            max-width: 1024px;
-            white-space: pre-wrap;
+            color: #666;
+            padding: 8px 0 0 0;
+            max-width: 600px;
+            line-height: 1.5;
+            text-align: center;
         }
 
+        /* Navigation arrows */
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .nav-arrow:hover {
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .nav-arrow.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .nav-arrow.left {
+            left: 12px;
+        }
+
+        .nav-arrow.right {
+            right: 12px;
+        }
+
+        .nav-arrow svg {
+            width: 20px;
+            height: 20px;
+            stroke: #1a1a1a;
+            stroke-width: 2;
+        }
+
+        /* Fade effect */
+        .fade-indicator {
+            position: absolute;
+            top: 0;
+            bottom: 8px;
+            right: 0;
+            width: 80px;
+            background: linear-gradient(to right, transparent, white);
+            pointer-events: none;
+            z-index: 5;
+            transition: opacity 0.3s;
+        }
+
+        .fade-indicator.hidden {
+            opacity: 0;
+        }
+
+        /* Post text */
+        .post-text {
+            font-size: 15px;
+            font-weight: 300;
+            line-height: 1.7;
+            color: #444;
+            white-space: pre-wrap;
+            letter-spacing: 0.01em;
+        }
+
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            animation: fadeIn 0.2s;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .lightbox-content {
+            position: relative;
+            max-width: 90vw;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .lightbox img,
+        .lightbox video {
+            max-width: 100%;
+            max-height: calc(90vh - 60px);
+            object-fit: contain;
+        }
+
+        .lightbox-description {
+            color: #444;
+            font-size: 14px;
+            font-weight: 300;
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.05);
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .lightbox-close:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .lightbox-close svg {
+            width: 24px;
+            height: 24px;
+            stroke: #1a1a1a;
+            stroke-width: 2;
+        }
+
+        /* Empty state */
         .empty-state {
             text-align: center;
-            padding: 100px 20px;
+            padding: 120px 32px;
             color: #ccc;
         }
 
         .empty-state p {
-            font-size: 1rem;
-            margin-bottom: 16px;
+            font-size: 15px;
             font-weight: 300;
+            margin-bottom: 12px;
         }
 
-        footer {
-            border-top: 1px solid #f0f0f0;
-            margin-top: 80px;
-        }
-
-        footer .footer-inner {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 40px 32px;
-        }
-
-        footer p {
-            font-size: 0.75rem;
-            color: #bbb;
-            font-weight: 300;
-            letter-spacing: 0.5px;
-            text-align: center;
-        }
-
+        /* Responsive */
         @media (max-width: 768px) {
-            .page-header-inner {
-                padding: 32px 20px;
+            header {
+                padding: 40px 24px 32px;
             }
 
-            .page-header h1 {
-                font-size: 1.25rem;
+            h1 {
+                font-size: 24px;
             }
 
             main {
-                padding: 0 20px 48px 20px;
+                padding: 0 24px 60px;
             }
 
             .post {
-                padding: 32px 0;
-            }
-
-            .post-destination h2 {
-                font-size: 1.1rem;
+                margin-bottom: 60px;
             }
 
             .media-item img,
             .media-item video {
-                max-width: 340px;
-                max-height: 400px;
+                height: 320px;
+            }
+
+            .lightbox {
+                padding: 20px;
             }
         }
     </style>
 </head>
 <body>
-    <header class="page-header">
-        <div class="page-header-inner">
-            <h1>Carnet de Voyage</h1>
-            <p class="subtitle">Partagez vos aventures avec vos proches</p>
-        </div>
+    <header>
+        <h1>Carnet de voyage</h1>
+        <p class="subtitle">Journal de bord de mes aventures</p>
     </header>
 
     <main>
         {% if posts %}
             {% for post in posts %}
             <article class="post">
-                <header class="post-header">
-                    <div class="post-destination">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-                        </svg>
-                        <h2>{{ post.city }}</h2>
-                    </div>
-                    <div class="post-meta">
-                        <div class="post-meta-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
-                            </svg>
-                            <span>{{ post.display_datetime.split(' à ')[0] if ' à ' in post.display_datetime else post.display_datetime }}</span>
-                        </div>
-                        <div class="post-meta-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span>{{ post.display_datetime.split(' à ')[1] if ' à ' in post.display_datetime else '' }}</span>
-                        </div>
-                    </div>
-                    {% if post.title %}
-                    <h3 class="post-title">{{ post.title }}</h3>
-                    {% endif %}
-                </header>
+                <div class="post-location">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    {{ post.city }}
+                </div>
+                <div class="post-datetime">{{ post.display_datetime }}</div>
 
                 {% if post.media %}
-                <div class="post-media-container">
-                    <div class="post-media">
-                        {% for media_url in post.media %}
-                        <div class="media-item">
-                            {% if media_url.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')) %}
-                                <img src="{{ media_url }}" alt="Photo de voyage">
-                            {% elif media_url.lower().endswith(('.mp4', '.webm', '.ogg')) %}
-                                <video controls>
-                                    <source src="{{ media_url }}" type="video/mp4">
-                                    Votre navigateur ne supporte pas la vidéo.
-                                </video>
-                            {% endif %}
+                <div class="media-gallery">
+                    <div class="media-scroll-container">
+                        <div class="media-scroll" id="scroll-{{ loop.index }}">
+                            {% for media in post.media %}
+                            <div class="media-item">
+                                <div onclick="openLightbox('{{ media.url }}', '{{ media.description }}', '{{ media.url.lower().endswith(('.mp4', '.webm', '.ogg')) }}')">
+                                    {% if media.url.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')) %}
+                                        <img src="{{ media.url }}" alt="{{ media.description or 'Photo de voyage' }}" loading="lazy">
+                                    {% elif media.url.lower().endswith(('.mp4', '.webm', '.ogg')) %}
+                                        <video muted loop>
+                                            <source src="{{ media.url }}" type="video/mp4">
+                                        </video>
+                                    {% endif %}
+                                </div>
+                                {% if media.description %}
+                                <div class="media-description">{{ media.description }}</div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
+                        <div class="fade-indicator" id="fade-{{ loop.index }}"></div>
                     </div>
+                    {% if post.media|length > 1 %}
+                    <button class="nav-arrow left hidden" id="left-{{ loop.index }}" onclick="scrollGallery('scroll-{{ loop.index }}', -1)">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <button class="nav-arrow right" id="right-{{ loop.index }}" onclick="scrollGallery('scroll-{{ loop.index }}', 1)">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    {% endif %}
                 </div>
                 {% endif %}
 
@@ -295,15 +396,112 @@
         {% else %}
             <div class="empty-state">
                 <p>Aucun moment partagé pour l'instant.</p>
-                <p>Commencez à documenter vos voyages !</p>
+                <p>L'aventure commence bientôt...</p>
             </div>
         {% endif %}
     </main>
 
-    <footer>
-        <div class="footer-inner">
-            <p>© 2024 Carnet de Voyage — Tous droits réservés</p>
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+        <button class="lightbox-close" onclick="closeLightbox(event)">
+            <svg viewBox="0 0 24 24" fill="none">
+                <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <div class="lightbox-content" onclick="event.stopPropagation()">
+            <img id="lightbox-img" style="display: none;">
+            <video id="lightbox-video" controls style="display: none;">
+                <source id="lightbox-video-source" type="video/mp4">
+            </video>
+            <div class="lightbox-description" id="lightbox-description"></div>
         </div>
-    </footer>
+    </div>
+
+    <script>
+        // Scroll gallery function
+        function scrollGallery(scrollId, direction) {
+            const container = document.getElementById(scrollId);
+            const scrollAmount = container.offsetWidth * 0.8;
+            container.scrollBy({
+                left: scrollAmount * direction,
+                behavior: 'smooth'
+            });
+        }
+
+        // Update arrow visibility and fade effect
+        function updateGalleryControls() {
+            document.querySelectorAll('.media-scroll').forEach((scroll, index) => {
+                const scrollIndex = index + 1;
+                const leftArrow = document.getElementById(`left-${scrollIndex}`);
+                const rightArrow = document.getElementById(`right-${scrollIndex}`);
+                const fadeIndicator = document.getElementById(`fade-${scrollIndex}`);
+                
+                if (leftArrow && rightArrow && fadeIndicator) {
+                    const isAtStart = scroll.scrollLeft <= 10;
+                    const isAtEnd = scroll.scrollLeft >= scroll.scrollWidth - scroll.offsetWidth - 10;
+                    
+                    leftArrow.classList.toggle('hidden', isAtStart);
+                    rightArrow.classList.toggle('hidden', isAtEnd);
+                    fadeIndicator.classList.toggle('hidden', isAtEnd);
+                }
+            });
+        }
+
+        // Lightbox functions
+        function openLightbox(url, description, isVideo) {
+            const lightbox = document.getElementById('lightbox');
+            const img = document.getElementById('lightbox-img');
+            const video = document.getElementById('lightbox-video');
+            const videoSource = document.getElementById('lightbox-video-source');
+            const desc = document.getElementById('lightbox-description');
+            
+            if (isVideo === 'True') {
+                img.style.display = 'none';
+                videoSource.src = url;
+                video.load();
+                video.style.display = 'block';
+            } else {
+                video.style.display = 'none';
+                img.src = url;
+                img.style.display = 'block';
+            }
+            
+            desc.textContent = description;
+            desc.style.display = description ? 'block' : 'none';
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox(event) {
+            const lightbox = document.getElementById('lightbox');
+            const video = document.getElementById('lightbox-video');
+            
+            lightbox.classList.remove('active');
+            video.pause();
+            document.body.style.overflow = '';
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeLightbox(e);
+            }
+        });
+
+        // Initialize controls
+        document.addEventListener('DOMContentLoaded', () => {
+            updateGalleryControls();
+            
+            document.querySelectorAll('.media-scroll').forEach(scroll => {
+                scroll.addEventListener('scroll', updateGalleryControls);
+            });
+
+            // Auto-play videos on hover
+            document.querySelectorAll('.media-item video').forEach(video => {
+                video.addEventListener('mouseenter', () => video.play());
+                video.addEventListener('mouseleave', () => video.pause());
+            });
+        });
+    </script>
 </body>
 </html>

@@ -32,7 +32,12 @@ MONTHS_FR = [
 
 
 def format_datetime_fr(dt):
-    return f"{dt.day:02d} {MONTHS_FR[dt.month - 1]} {dt.year} à {dt.strftime('%H:%M')}"
+    day = dt.day
+    month = MONTHS_FR[dt.month - 1].capitalize()
+    year = dt.year
+    hour = dt.hour
+    minute = dt.minute
+    return f"Le {day} {month} {year} à {hour}h{minute:02d}"
 
 
 def get_posts():
@@ -46,6 +51,17 @@ def get_posts():
     for post in posts_data:
         post["datetime"] = datetime.datetime.fromisoformat(post["datetime"])
         post["display_datetime"] = format_datetime_fr(post["datetime"])
+
+        # Normalize media format for backward compatibility
+        if "media" in post:
+            normalized_media = []
+            for item in post["media"]:
+                if isinstance(item, str):
+                    normalized_media.append({"url": item, "description": ""})
+                else:
+                    normalized_media.append(item)
+            post["media"] = normalized_media
+
     return sorted(posts_data, key=lambda x: x["datetime"], reverse=True)
 
 
@@ -65,10 +81,11 @@ def index():
 @app.route("/add", methods=["GET", "POST"])
 def add():
     if request.method == "POST":
-        media_urls = []
+        media_items = []
         medias = request.files.getlist("media")
+        media_descriptions = request.form.getlist("media_description")
 
-        for media in medias:
+        for i, media in enumerate(medias):
             if media.filename:
                 # Generate a unique filename
                 filename = f"{uuid.uuid4()}{os.path.splitext(media.filename)[1]}"
@@ -76,7 +93,14 @@ def add():
 
                 # Upload the file to GCS
                 blob.upload_from_file(media.stream, content_type=media.content_type)
-                media_urls.append(blob.public_url)
+
+                media_item = {
+                    "url": blob.public_url,
+                    "description": media_descriptions[i]
+                    if i < len(media_descriptions)
+                    else "",
+                }
+                media_items.append(media_item)
 
         # Combine date and time into a datetime object
         date_str = request.form.get("date")
@@ -89,9 +113,8 @@ def add():
             "id": str(uuid.uuid4()),
             "city": request.form.get("city"),
             "datetime": post_datetime.isoformat(),
-            "title": request.form.get("title"),
             "text": request.form.get("text"),
-            "media": media_urls,
+            "media": media_items,
         }
 
         posts = get_posts()
@@ -118,17 +141,33 @@ def edit_post(post_id):
         return redirect(url_for("index"))
 
     if request.method == "POST":
-        # This part handles the form submission from the edit_post.html page
-        # It's different from the deletion which will be handled in a separate route
-        media_urls = list(post.get("media", []))
-        files = request.files.getlist("media")
+        # Keep existing media
+        existing_media = post.get("media", [])
+        # Normalize old format to new format if needed
+        media_items = []
+        for item in existing_media:
+            if isinstance(item, str):
+                media_items.append({"url": item, "description": ""})
+            else:
+                media_items.append(item)
 
-        for file in files:
+        # Add new media
+        files = request.files.getlist("media")
+        media_descriptions = request.form.getlist("media_description")
+
+        for i, file in enumerate(files):
             if file.filename:
                 filename = f"{uuid.uuid4()}{os.path.splitext(file.filename)[1]}"
                 blob = bucket.blob(filename)
                 blob.upload_from_file(file.stream, content_type=file.content_type)
-                media_urls.append(blob.public_url)
+
+                media_item = {
+                    "url": blob.public_url,
+                    "description": media_descriptions[i]
+                    if i < len(media_descriptions)
+                    else "",
+                }
+                media_items.append(media_item)
 
         date_str = request.form.get("date")
         time_str = request.form.get("time")
@@ -138,9 +177,8 @@ def edit_post(post_id):
 
         post["city"] = request.form.get("city")
         post["datetime"] = post_datetime.isoformat()
-        post["title"] = request.form.get("title")
         post["text"] = request.form.get("text")
-        post["media"] = media_urls
+        post["media"] = media_items
 
         save_posts(posts)
         return redirect(url_for("edit_list"))

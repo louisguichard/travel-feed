@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gérer les posts - Carnet de Voyage</title>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    <title>Gérer les moments</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,58 +15,56 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #fff;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #ffffff;
             color: #1a1a1a;
-            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
         }
 
-        h1, h2, h3 {
-            font-family: 'Manrope', sans-serif;
-        }
-
-        .page-header {
-            border-bottom: 1px solid #f0f0f0;
-            margin-bottom: 64px;
-        }
-
-        .page-header-inner {
-            max-width: 1280px;
-            margin: 0 auto;
+        header {
             padding: 40px 32px;
+            max-width: 900px;
+            margin: 0 auto;
+            border-bottom: 1px solid #f0f0f0;
         }
 
-        .page-header h1 {
-            font-size: 1.5rem;
-            font-weight: 300;
-            letter-spacing: 0.5px;
+        h1 {
+            font-size: 24px;
+            font-weight: 400;
+            letter-spacing: -0.02em;
             color: #1a1a1a;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
 
         .back-link {
-            display: inline-block;
-            color: #888;
+            display: inline-flex;
+            align-items: center;
+            font-size: 14px;
+            color: #666;
             text-decoration: none;
-            font-size: 0.75rem;
-            transition: color 0.3s;
-            letter-spacing: 0.5px;
-            font-weight: 300;
+            margin-bottom: 24px;
+            transition: color 0.2s;
         }
 
         .back-link:hover {
-            color: #555;
+            color: #1a1a1a;
+        }
+
+        .back-link svg {
+            width: 16px;
+            height: 16px;
+            margin-right: 6px;
         }
 
         main {
-            max-width: 1280px;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 0 32px 64px 32px;
+            padding: 40px 32px 80px;
         }
 
         .post-list {
             list-style: none;
-            padding: 0;
         }
 
         .post-item {
@@ -80,36 +80,31 @@
         }
 
         .post-info {
-            font-weight: 300;
+            flex: 1;
         }
 
-        .post-title {
+        .post-location {
+            font-size: 16px;
             font-weight: 400;
-            font-size: 1rem;
-            letter-spacing: 0.3px;
             color: #1a1a1a;
+            margin-bottom: 4px;
         }
 
-        .post-details {
-            font-size: 0.75rem;
-            color: #888;
-            margin-top: 6px;
-            letter-spacing: 0.3px;
+        .post-datetime {
+            font-size: 13px;
+            font-weight: 300;
+            color: #999;
         }
 
         .post-actions {
             display: flex;
             gap: 16px;
-            align-items: center;
         }
 
-        .post-actions a,
-        .post-actions button {
+        .post-actions a {
+            font-size: 14px;
+            color: #666;
             text-decoration: none;
-            color: #555;
-            font-size: 0.75rem;
-            cursor: pointer;
-            letter-spacing: 0.3px;
             transition: color 0.2s;
         }
 
@@ -117,65 +112,86 @@
             color: #1a1a1a;
         }
 
-        .post-actions .delete-btn {
+        .delete-btn {
+            font-size: 14px;
             color: #dc3545;
-            border: none;
             background: none;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
             padding: 0;
-            font-family: 'Inter', sans-serif;
-            font-weight: 300;
+            transition: color 0.2s;
         }
 
-        .post-actions .delete-btn:hover {
+        .delete-btn:hover {
             color: #c82333;
         }
 
+        .empty-state {
+            text-align: center;
+            padding: 80px 32px;
+            color: #ccc;
+        }
+
+        .empty-state p {
+            font-size: 15px;
+            font-weight: 300;
+            margin-bottom: 12px;
+        }
+
         @media (max-width: 768px) {
-            .page-header-inner {
-                padding: 32px 20px;
-            }
-
-            .page-header h1 {
-                font-size: 1.25rem;
-            }
-
-            main {
-                padding: 0 20px 48px 20px;
+            header, main {
+                padding-left: 24px;
+                padding-right: 24px;
             }
 
             .post-item {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 12px;
+                gap: 16px;
+            }
+
+            .post-actions {
+                width: 100%;
+                justify-content: flex-end;
             }
         }
     </style>
 </head>
 <body>
-    <header class="page-header">
-        <div class="page-header-inner">
-            <h1>Gérer les posts</h1>
-            <a href="/" class="back-link">← Retour au feed</a>
-        </div>
+    <header>
+        <a href="/" class="back-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M19 12H5M12 19l-7-7 7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Retour
+        </a>
+        <h1>Gérer les moments</h1>
     </header>
 
     <main>
+        {% if posts %}
         <ul class="post-list">
             {% for post in posts %}
             <li class="post-item">
                 <div class="post-info">
-                    <div class="post-title">{{ post.title }}</div>
-                    <div class="post-details">{{ post.city }} - {{ post.display_datetime }}</div>
+                    <div class="post-location">{{ post.city }}</div>
+                    <div class="post-datetime">{{ post.display_datetime }}</div>
                 </div>
                 <div class="post-actions">
                     <a href="{{ url_for('edit_post', post_id=post.id) }}">Modifier</a>
-                    <form action="{{ url_for('delete_post', post_id=post.id) }}" method="post" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?');">
+                    <form action="{{ url_for('delete_post', post_id=post.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce moment ?');">
                         <button type="submit" class="delete-btn">Supprimer</button>
                     </form>
                 </div>
             </li>
             {% endfor %}
         </ul>
+        {% else %}
+        <div class="empty-state">
+            <p>Aucun moment à gérer pour l'instant.</p>
+        </div>
+        {% endif %}
     </main>
 </body>
 </html>

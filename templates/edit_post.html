@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modifier le moment - Carnet de Voyage</title>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    <title>Modifier le moment</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,88 +15,84 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #fff;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #ffffff;
             color: #1a1a1a;
-            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
         }
 
-        h1, h2, h3 {
-            font-family: 'Manrope', sans-serif;
-        }
-
-        .page-header {
-            border-bottom: 1px solid #f0f0f0;
-            margin-bottom: 64px;
-        }
-
-        .page-header-inner {
-            max-width: 1280px;
-            margin: 0 auto;
+        header {
             padding: 40px 32px;
+            max-width: 700px;
+            margin: 0 auto;
+            border-bottom: 1px solid #f0f0f0;
         }
 
-        .page-header h1 {
-            font-size: 1.5rem;
-            font-weight: 300;
-            letter-spacing: 0.5px;
+        h1 {
+            font-size: 24px;
+            font-weight: 400;
+            letter-spacing: -0.02em;
             color: #1a1a1a;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
 
         .back-link {
-            display: inline-block;
-            color: #888;
+            display: inline-flex;
+            align-items: center;
+            font-size: 14px;
+            color: #666;
             text-decoration: none;
-            font-size: 0.75rem;
-            transition: color 0.3s;
-            letter-spacing: 0.5px;
-            font-weight: 300;
+            margin-bottom: 24px;
+            transition: color 0.2s;
         }
 
         .back-link:hover {
-            color: #555;
+            color: #1a1a1a;
+        }
+
+        .back-link svg {
+            width: 16px;
+            height: 16px;
+            margin-right: 6px;
         }
 
         main {
-            max-width: 800px;
+            max-width: 700px;
             margin: 0 auto;
-            padding: 0 32px 64px 32px;
+            padding: 40px 32px 80px;
         }
 
         form {
-            background: #fff;
-            margin-bottom: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
         }
 
         .form-group {
-            margin-bottom: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 0.75rem;
-            color: #888;
-            font-weight: 300;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            font-size: 14px;
+            font-weight: 400;
+            color: #1a1a1a;
         }
 
         input[type="text"],
         input[type="date"],
         input[type="time"],
         textarea {
-            width: 100%;
             padding: 12px 16px;
-            border: 1px solid #e8e8e8;
-            border-radius: 8px;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.875rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 15px;
             font-weight: 300;
-            color: #1a1a1a;
-            transition: all 0.2s;
-            background-color: #fff;
+            transition: border-color 0.2s;
+            background: #ffffff;
         }
 
         input[type="text"]:focus,
@@ -102,194 +100,259 @@
         input[type="time"]:focus,
         textarea:focus {
             outline: none;
-            border-color: #bbb;
+            border-color: #1a1a1a;
         }
 
         textarea {
             resize: vertical;
-            min-height: 150px;
-            line-height: 1.6;
+            min-height: 120px;
         }
 
-        input[type="file"] {
-            width: 100%;
-            padding: 16px;
-            border: 1px dashed #e0e0e0;
-            border-radius: 8px;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.8rem;
-            color: #888;
-            cursor: pointer;
-            transition: all 0.2s;
-            background-color: #fafafa;
-        }
-
-        input[type="file"]:hover {
-            border-color: #bbb;
-            background-color: #fff;
-        }
-
-        .button-group {
-            margin-top: 48px;
-            text-align: center;
-            display: flex;
+        .datetime-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 16px;
-            justify-content: center;
         }
 
-        button {
-            padding: 12px 48px;
-            border: none;
-            border-radius: 24px;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.875rem;
-            font-weight: 400;
-            cursor: pointer;
-            transition: all 0.2s;
-            letter-spacing: 0.3px;
-        }
-
-        button[type="submit"] {
-            background-color: #1a1a1a;
-            color: #fff;
-        }
-
-        button[type="submit"]:hover {
-            background-color: #333;
-        }
-
-        .delete-button {
-            background-color: #dc3545;
-            color: #fff;
-        }
-
-        .delete-button:hover {
-            background-color: #c82333;
-        }
-
-        .helper-text {
-            font-size: 0.7rem;
-            color: #aaa;
-            margin-top: 6px;
-            font-weight: 300;
-            letter-spacing: 0.3px;
-        }
-
+        /* Current media display */
         .current-media {
-            margin-bottom: 12px;
+            display: flex;
+            gap: 12px;
             overflow-x: auto;
-            white-space: nowrap;
-            padding: 8px 0;
-            scrollbar-width: none;
+            padding: 12px;
+            background: #fafafa;
+            border-radius: 6px;
+            margin-top: 8px;
         }
 
-        .current-media::-webkit-scrollbar {
-            display: none;
+        .current-media-item {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         .current-media img,
         .current-media video {
-            display: inline-block;
-            height: 120px;
+            height: 150px;
             width: auto;
-            margin-right: 12px;
-            border-radius: 8px;
-            border: 1px solid #e8e8e8;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .media-desc {
+            font-size: 12px;
+            color: #666;
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Media upload */
+        .media-upload-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .media-item-wrapper {
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px dashed #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            background: #fafafa;
+        }
+
+        input[type="file"]:hover {
+            border-color: #1a1a1a;
+            background: #f5f5f5;
+        }
+
+        .add-media-btn {
+            align-self: flex-start;
+            padding: 10px 20px;
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .add-media-btn:hover {
+            background: #eeeeee;
+            border-color: #1a1a1a;
+        }
+
+        .submit-btn {
+            padding: 14px 32px;
+            background: #1a1a1a;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 16px;
+        }
+
+        .submit-btn:hover {
+            background: #333333;
+        }
+
+        .delete-btn {
+            padding: 14px 32px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 32px;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+        }
+
+        .hint {
+            font-size: 13px;
+            color: #999;
+            font-weight: 300;
+        }
+
+        .separator {
+            border: none;
+            border-top: 1px solid #f0f0f0;
+            margin: 48px 0;
         }
 
         @media (max-width: 768px) {
-            .page-header-inner {
-                padding: 32px 20px;
+            header, main {
+                padding-left: 24px;
+                padding-right: 24px;
             }
 
-            .page-header h1 {
-                font-size: 1.25rem;
-            }
-
-            main {
-                padding: 0 20px 48px 20px;
-            }
-
-            .button-group {
-                flex-direction: column;
-            }
-
-            button {
-                width: 100%;
+            .datetime-group {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <header class="page-header">
-        <div class="page-header-inner">
-            <h1>Modifier le moment</h1>
-            <a href="/edit" class="back-link">← Retour à la liste</a>
-        </div>
+    <header>
+        <a href="/edit" class="back-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M19 12H5M12 19l-7-7 7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Retour
+        </a>
+        <h1>Modifier le moment</h1>
     </header>
 
     <main>
-        <form method="post" enctype="multipart/form-data">
+        <form method="POST" enctype="multipart/form-data">
             <div class="form-group">
-                <label for="city">Ville</label>
+                <label for="city">Lieu</label>
                 <input type="text" id="city" name="city" value="{{ post.city }}" required>
             </div>
 
-            <div class="form-group">
-                <label for="date">Date</label>
-                <input type="date" id="date" name="date" value="{{ post.datetime.strftime('%Y-%m-%d') }}" required>
-            </div>
-
-            <div class="form-group">
-                <label for="time">Heure</label>
-                <input type="time" id="time" name="time" value="{{ post.datetime.strftime('%H:%M') }}" required>
-            </div>
-
-            <div class="form-group">
-                <label for="title">Titre</label>
-                <input type="text" id="title" name="title" value="{{ post.title }}" required>
-            </div>
-
-            <div class="form-group">
-                <label for="text">Texte</label>
-                <textarea id="text" name="text">{{ post.text }}</textarea>
-                <p class="helper-text">Décrivez votre moment (optionnel)</p>
+            <div class="datetime-group">
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date" id="date" name="date" value="{{ post.datetime.strftime('%Y-%m-%d') }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="time">Heure</label>
+                    <input type="time" id="time" name="time" value="{{ post.datetime.strftime('%H:%M') }}" required>
+                </div>
             </div>
 
             {% if post.media %}
             <div class="form-group">
                 <label>Médias actuels</label>
                 <div class="current-media">
-                    {% for media_url in post.media %}
-                        {% if media_url.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')) %}
-                            <img src="{{ media_url }}" alt="Média actuel">
-                        {% elif media_url.lower().endswith(('.mp4', '.webm', '.ogg')) %}
-                            <video controls>
-                                <source src="{{ media_url }}" type="video/mp4">
+                    {% for media in post.media %}
+                    <div class="current-media-item">
+                        {% if media.url.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')) %}
+                            <img src="{{ media.url }}" alt="{{ media.description or 'Photo' }}">
+                        {% elif media.url.lower().endswith(('.mp4', '.webm', '.ogg')) %}
+                            <video muted>
+                                <source src="{{ media.url }}" type="video/mp4">
                             </video>
                         {% endif %}
+                        {% if media.description %}
+                        <div class="media-desc" title="{{ media.description }}">{{ media.description }}</div>
+                        {% endif %}
+                    </div>
                     {% endfor %}
                 </div>
+                <p class="hint">Ces médias seront conservés</p>
             </div>
             {% endif %}
 
             <div class="form-group">
-                <label for="media">Ajouter des photos ou vidéos</label>
-                <input type="file" id="media" name="media" accept="image/*,video/*" multiple>
-                <p class="helper-text">Les nouveaux médias seront ajoutés aux médias existants</p>
+                <label>Ajouter de nouveaux médias</label>
+                <div id="media-container" class="media-upload-section">
+                    <div class="media-item-wrapper">
+                        <div class="file-input-wrapper">
+                            <input type="file" name="media" accept="image/*,video/*">
+                        </div>
+                        <input type="text" name="media_description" placeholder="Description du média (optionnel)">
+                    </div>
+                </div>
+                <button type="button" class="add-media-btn" onclick="addMediaField()">+ Ajouter un média</button>
             </div>
 
-            <div class="button-group">
-                <button type="submit">Mettre à jour</button>
+            <div class="form-group">
+                <label for="text">Texte</label>
+                <textarea id="text" name="text">{{ post.text or '' }}</textarea>
             </div>
+
+            <button type="submit" class="submit-btn">Mettre à jour</button>
         </form>
 
-        <form action="{{ url_for('delete_post', post_id=post.id) }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?');">
-            <div class="button-group">
-                <button type="submit" class="delete-button">Supprimer le post</button>
-            </div>
+        <hr class="separator">
+
+        <form action="{{ url_for('delete_post', post_id=post.id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce moment ? Cette action est irréversible.');">
+            <button type="submit" class="delete-btn">Supprimer ce moment</button>
         </form>
     </main>
+
+    <script>
+        function addMediaField() {
+            const container = document.getElementById('media-container');
+            const newField = document.createElement('div');
+            newField.className = 'media-item-wrapper';
+            newField.innerHTML = `
+                <div class="file-input-wrapper">
+                    <input type="file" name="media" accept="image/*,video/*">
+                </div>
+                <input type="text" name="media_description" placeholder="Description du média (optionnel)">
+            `;
+            container.appendChild(newField);
+        }
+    </script>
 </body>
 </html>
-
