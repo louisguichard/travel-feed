@@ -71,6 +71,10 @@ def save_posts(posts):
     data = json.dumps(posts, indent=4, default=str)
     blob.upload_from_string(data, content_type="application/json")
 
+    # Set metadata to disable caching
+    blob.cache_control = "no-store"
+    blob.patch()
+
 
 @app.route("/")
 def index():
