@@ -9,7 +9,7 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 from google.cloud import storage
 
 app = Flask(__name__)
-app.config["MAX_CONTENT_LENGTH"] = 100 * 1024 * 1024  # 100 MB limit
+app.config["MAX_CONTENT_LENGTH"] = 1024 * 1024 * 1024  # 1024 MB limit
 
 # Cloud Storage configuration
 BUCKET_NAME = "travel-feed"
@@ -140,6 +140,15 @@ def index():
     return render_template(
         "index.html", posts=posts, unsubscribe_success=unsubscribe_success
     )
+
+
+@app.errorhandler(413)
+def request_entity_too_large(error):
+    limit_mb = int(app.config.get("MAX_CONTENT_LENGTH", 0) / (1024 * 1024))
+    return render_template(
+        "add.html",
+        error_message=f"Votre envoi dépasse la taille maximale autorisée ({limit_mb} Mo). Réduisez la taille des fichiers ou envoyez-en moins.",
+    ), 413
 
 
 @app.route("/add", methods=["GET", "POST"])

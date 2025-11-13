@@ -213,6 +213,9 @@
     </header>
 
     <main>
+        {% if error_message %}
+        <div class="hint" style="color:#b00020">{{ error_message }}</div>
+        {% endif %}
         <form method="POST" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="city">Lieu</label>
