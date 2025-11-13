@@ -388,5 +388,65 @@
             });
         }
     </script>
+    <script>
+        // Direct-to-GCS upload for new media on edit page
+        (function () {
+            const editForm = Array.prototype.slice.call(document.querySelectorAll('form')).find(function (f) {
+                return f.querySelector('.media-upload-section');
+            });
+            if (!editForm) return;
+            editForm.addEventListener('submit', async function (e) {
+                try {
+                    const wrappers = Array.prototype.slice.call(editForm.querySelectorAll('.media-item-wrapper'));
+                    const uploads = [];
+                    wrappers.forEach(function (wrap) {
+                        const fileInput = wrap.querySelector('input[type="file"][name="media"]');
+                        const descInput = wrap.querySelector('input[name="media_description"]');
+                        if (fileInput && fileInput.files && fileInput.files.length) {
+                            uploads.push({ file: fileInput.files[0], desc: (descInput && descInput.value) || '' });
+                        }
+                    });
+                    if (!uploads.length) return; // nothing to upload
+                    e.preventDefault();
+                    const submitBtn = editForm.querySelector('button[type="submit"]');
+                    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Mise à jour...'; }
+                    for (let i = 0; i < uploads.length; i++) {
+                        const item = uploads[i];
+                        const file = item.file;
+                        const ext = (file.name && file.name.includes('.')) ? ('.' + file.name.split('.').pop()) : '';
+                        const uuid = (self.crypto && self.crypto.randomUUID) ? self.crypto.randomUUID() : (Date.now().toString(36) + Math.random().toString(36).slice(2));
+                        const filename = uuid + ext;
+                        const resp = await fetch('/signed-url', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ filename: filename, content_type: file.type || 'application/octet-stream', method: 'PUT' })
+                        });
+                        if (!resp.ok) throw new Error('Erreur de génération du lien signé');
+                        const data = await resp.json();
+                        const putResp = await fetch(data.url, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': file.type || 'application/octet-stream' },
+                            body: file
+                        });
+                        if (!putResp.ok) throw new Error('Erreur lors de l’envoi du fichier');
+                        const urlInput = document.createElement('input');
+                        urlInput.type = 'hidden';
+                        urlInput.name = 'uploaded_media_url';
+                        urlInput.value = data.public_url;
+                        editForm.appendChild(urlInput);
+                        const descInputHidden = document.createElement('input');
+                        descInputHidden.type = 'hidden';
+                        descInputHidden.name = 'uploaded_media_description';
+                        descInputHidden.value = item.desc || '';
+                        editForm.appendChild(descInputHidden);
+                    }
+                    editForm.querySelectorAll('input[type="file"][name="media"]').forEach(function (el) { el.removeAttribute('name'); });
+                    editForm.submit();
+                } catch (err) {
+                    alert('Envoi des nouveaux médias impossible. ' + (err && err.message ? err.message : ''));
+                }
+            }, false);
+        })();
+    </script>
 </body>
 </html>

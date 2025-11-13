@@ -7,6 +7,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from google.cloud import storage
+import google.auth
+from google.auth.transport import requests as google_auth_requests
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 1024 * 1024 * 1024  # 1024 MB limit
@@ -155,25 +157,35 @@ def request_entity_too_large(error):
 def add():
     if request.method == "POST":
         media_items = []
-        medias = request.files.getlist("media")
-        media_descriptions = request.form.getlist("media_description")
-
-        for i, media in enumerate(medias):
-            if media.filename:
-                # Generate a unique filename
-                filename = f"{uuid.uuid4()}{os.path.splitext(media.filename)[1]}"
-                blob = bucket.blob(filename)
-
-                # Upload the file to GCS
-                blob.upload_from_file(media.stream, content_type=media.content_type)
-
-                media_item = {
-                    "url": blob.public_url,
-                    "description": media_descriptions[i]
-                    if i < len(media_descriptions)
-                    else "",
-                }
-                media_items.append(media_item)
+        # New path: direct-to-GCS uploads via signed URLs
+        uploaded_urls = request.form.getlist("uploaded_media_url")
+        uploaded_descs = request.form.getlist("uploaded_media_description")
+        if uploaded_urls:
+            for i, url in enumerate(uploaded_urls):
+                media_items.append(
+                    {
+                        "url": url,
+                        "description": uploaded_descs[i]
+                        if i < len(uploaded_descs)
+                        else "",
+                    }
+                )
+        else:
+            # Fallback: traditional upload (small files only)
+            medias = request.files.getlist("media")
+            media_descriptions = request.form.getlist("media_description")
+            for i, media in enumerate(medias):
+                if media.filename:
+                    filename = f"{uuid.uuid4()}{os.path.splitext(media.filename)[1]}"
+                    blob = bucket.blob(filename)
+                    blob.upload_from_file(media.stream, content_type=media.content_type)
+                    media_item = {
+                        "url": blob.public_url,
+                        "description": media_descriptions[i]
+                        if i < len(media_descriptions)
+                        else "",
+                    }
+                    media_items.append(media_item)
 
         # Combine date and time into a datetime object
         date_str = request.form.get("date")
@@ -246,23 +258,36 @@ def edit_post(post_id):
             if media_item["url"] in description_map:
                 media_item["description"] = description_map[media_item["url"]]
 
-        # Add new media
-        files = request.files.getlist("media")
-        media_descriptions = request.form.getlist("media_description")
+        # Add new media (prefer direct-to-GCS uploads if provided)
+        uploaded_urls = request.form.getlist("uploaded_media_url")
+        uploaded_descs = request.form.getlist("uploaded_media_description")
+        if uploaded_urls:
+            for i, url in enumerate(uploaded_urls):
+                post["media"].append(
+                    {
+                        "url": url,
+                        "description": uploaded_descs[i]
+                        if i < len(uploaded_descs)
+                        else "",
+                    }
+                )
+        else:
+            files = request.files.getlist("media")
+            media_descriptions = request.form.getlist("media_description")
 
-        for i, file in enumerate(files):
-            if file.filename:
-                filename = f"{uuid.uuid4()}{os.path.splitext(file.filename)[1]}"
-                blob = bucket.blob(filename)
-                blob.upload_from_file(file.stream, content_type=file.content_type)
+            for i, file in enumerate(files):
+                if file.filename:
+                    filename = f"{uuid.uuid4()}{os.path.splitext(file.filename)[1]}"
+                    blob = bucket.blob(filename)
+                    blob.upload_from_file(file.stream, content_type=file.content_type)
 
-                media_item = {
-                    "url": blob.public_url,
-                    "description": media_descriptions[i]
-                    if i < len(media_descriptions)
-                    else "",
-                }
-                post["media"].append(media_item)
+                    media_item = {
+                        "url": blob.public_url,
+                        "description": media_descriptions[i]
+                        if i < len(media_descriptions)
+                        else "",
+                    }
+                    post["media"].append(media_item)
 
         date_str = request.form.get("date")
         time_str = request.form.get("time")
@@ -361,6 +386,40 @@ def locations():
                 }
             )
     return jsonify(locations)
+
+
+@app.route("/signed-url", methods=["POST"])
+def signed_url():
+    """Generate a V4 signed URL using Cloud Run service account (no key file)."""
+    data = request.get_json(silent=True) or {}
+    filename = (data.get("filename") or "").strip()
+    content_type = (data.get("content_type") or "application/octet-stream").strip()
+    method = (data.get("method") or "PUT").strip().upper()
+
+    if not filename:
+        return jsonify({"error": "filename is required"}), 400
+
+    try:
+        credentials, _ = google.auth.default()
+        # Refresh to ensure we have an access token
+        credentials.refresh(google_auth_requests.Request())
+        # Prefer embedded service account email. Optionally allow override via env.
+        service_account_email = getattr(credentials, "service_account_email", None)
+        if not service_account_email:
+            service_account_email = os.environ.get("SERVICE_ACCOUNT_EMAIL", "")
+
+        blob = bucket.blob(filename)
+        url = blob.generate_signed_url(
+            version="v4",
+            expiration=datetime.timedelta(minutes=15),
+            method=method,
+            content_type=content_type,
+            service_account_email=service_account_email,
+            access_token=credentials.token,
+        )
+        return jsonify({"url": url, "public_url": blob.public_url})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":

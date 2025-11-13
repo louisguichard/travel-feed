@@ -200,7 +200,7 @@
             }
         }
     </style>
-</head>
+    </head>
 <body>
     <header>
         <a href="/" class="back-link">
@@ -284,6 +284,68 @@
             dateInput.value = `${year}-${month}-${day}`;
             timeInput.value = `${hours}:${minutes}`;
         });
+        
+        // Direct-to-GCS upload with signed URLs to avoid Cloud Run size limits
+        (function () {
+            const form = document.querySelector('form');
+            if (!form) return;
+            form.addEventListener('submit', async function (e) {
+                try {
+                    const wrappers = Array.prototype.slice.call(document.querySelectorAll('.media-item-wrapper'));
+                    const uploads = [];
+                    wrappers.forEach(function (wrap) {
+                        const fileInput = wrap.querySelector('input[type="file"][name="media"]');
+                        const descInput = wrap.querySelector('input[name="media_description"]');
+                        if (fileInput && fileInput.files && fileInput.files.length) {
+                            uploads.push({ file: fileInput.files[0], desc: (descInput && descInput.value) || '' });
+                        }
+                    });
+                    if (!uploads.length) return; // nothing to upload
+                    e.preventDefault();
+                    // disable submit button
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Publication...'; }
+                    for (let i = 0; i < uploads.length; i++) {
+                        const item = uploads[i];
+                        const file = item.file;
+                        const ext = (file.name && file.name.includes('.')) ? ('.' + file.name.split('.').pop()) : '';
+                        const uuid = (self.crypto && self.crypto.randomUUID) ? self.crypto.randomUUID() : (Date.now().toString(36) + Math.random().toString(36).slice(2));
+                        const filename = uuid + ext;
+                        const resp = await fetch('/signed-url', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ filename: filename, content_type: file.type || 'application/octet-stream', method: 'PUT' })
+                        });
+                        if (!resp.ok) throw new Error('Erreur de génération du lien signé');
+                        const data = await resp.json();
+                        const putResp = await fetch(data.url, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': file.type || 'application/octet-stream' },
+                            body: file
+                        });
+                        if (!putResp.ok) throw new Error('Erreur lors de l’envoi du fichier');
+                        // add hidden inputs for server
+                        const urlInput = document.createElement('input');
+                        urlInput.type = 'hidden';
+                        urlInput.name = 'uploaded_media_url';
+                        urlInput.value = data.public_url;
+                        form.appendChild(urlInput);
+                        const descInputHidden = document.createElement('input');
+                        descInputHidden.type = 'hidden';
+                        descInputHidden.name = 'uploaded_media_description';
+                        descInputHidden.value = item.desc || '';
+                        form.appendChild(descInputHidden);
+                    }
+                    // prevent sending original files
+                    document.querySelectorAll('input[type="file"][name="media"]').forEach(function (el) { el.removeAttribute('name'); });
+                    // submit the form
+                    form.submit();
+                } catch (err) {
+                    alert('Envoi des médias impossible. ' + (err && err.message ? err.message : ''));
+                }
+            }, false);
+        })();
     </script>
 </body>
 </html>
+
